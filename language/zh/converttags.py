@@ -12,13 +12,11 @@ class ConvertTags:
         :param tags_dic: a dic of pairs of old:new words
         :return: True
         """
-        # open files
-        file2 = open(self.resultfile, "w", encoding='utf-8')
-        for line in open(self.sourcefile, encoding='utf-8'):
-            for old, new in tags_dic.items():
-                line = line.replace(old, new)
-            file2.write(line)
-        file2.close()
+        with open(self.resultfile, "w", encoding='utf-8') as file2:
+            for line in open(self.sourcefile, encoding='utf-8'):
+                for old, new in tags_dic.items():
+                    line = line.replace(old, new)
+                file2.write(line)
         return True
 
 if __name__ == "__main__":
