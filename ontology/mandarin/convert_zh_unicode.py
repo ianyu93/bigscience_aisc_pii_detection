@@ -35,19 +35,11 @@ def main():
 					zh_traditional_entities.append(HanziConv.toTraditional(item))
 					assert HanziConv.same(zh_simplified_entities[-1], zh_traditional_entities[-1])
 
-			if len(zh_simplified_entities) > 0:	
-				zh_simplified_dict[key] = zh_simplified_entities
-			else:
-				zh_simplified_dict[key] = data[key] 
-			
-			if len(zh_traditional_entities) > 0:
-				zh_traditional_dict[key] = zh_traditional_entities
-			else:
-				zh_traditional_dict[key] = data[key]
-		
+			zh_simplified_dict[key] = zh_simplified_entities or data[key]
+			zh_traditional_dict[key] = zh_traditional_entities or data[key]
 		assert zh_traditional_dict.keys() == data.keys()
 		assert zh_simplified_dict.keys() == data.keys()
-	
+
 	with open(os.path.join(args.export_path, 'zh_simplified.json'), 'w', encoding='utf-8') as output:
 		json.dump(zh_simplified_dict, output)
 

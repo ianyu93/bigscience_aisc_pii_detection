@@ -18,9 +18,8 @@ def combine_jsons():
     d['data'] = l
     result = json.dumps((d))
 
-    outfile = open("result.json", 'w')
-    outfile.write(result)
-    outfile.close()
+    with open("result.json", 'w') as outfile:
+        outfile.write(result)
     return True
 
 if __name__ == "__main__":

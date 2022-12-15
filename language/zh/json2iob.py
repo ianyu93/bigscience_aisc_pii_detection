@@ -42,9 +42,12 @@ def check_partial(annotations):
     # Check if any annotation is part of other annotations
     other_annotations = [range(annotation['start'], annotation['end'])
                          for annotation in annotations]
-    return any([annotation['start'] in other_annotation
-                for annotation in annotations
-                for other_annotation in other_annotations if annotation['start'] != other_annotation.start])
+    return any(
+        annotation['start'] in other_annotation
+        for annotation in annotations
+        for other_annotation in other_annotations
+        if annotation['start'] != other_annotation.start
+    )
 
 
 def check_overlap(annotations):
@@ -54,7 +57,7 @@ def check_overlap(annotations):
 
 def get_labels(result):
     # Get labels for each line
-    return [re.search('\s(.+$)', line).group(1) for line in result.split('\n') if line]
+    return [re.search('\s(.+$)', line)[1] for line in result.split('\n') if line]
 
 
 def indexing(annotation):
@@ -77,10 +80,10 @@ def tagging(subdoc, annotated_values):
     tokenized = tokenize(subdoc[2])
     first_token = tokenized[0]
     for token in tokenized:
-        if len(tag) == 0:
-            yield token+' O'
+        if not tag:
+            yield f'{token} O'
         else:
-            yield token+f' B-{tag[0]}' if token == first_token else token+f' I-{tag[0]}'
+            yield f'{token} B-{tag[0]}' if token == first_token else f'{token} I-{tag[0]}'
 
 
 def tokenize(text):
@@ -91,7 +94,7 @@ def tokenize(text):
 def convert(content, annotations):
     # Convert each content to IOB format with annotations
     if len(annotations) == 0:
-        return '\n'.join([token+' O' for token in tokenize(content)])
+        return '\n'.join([f'{token} O' for token in tokenize(content)])
     indices = sorted(flatten(
         [[annotation['start'], annotation['end']] for annotation in annotations]))
     splitted_content = [(i, j, content[i:j])
@@ -118,6 +121,12 @@ for dataset, destination in zip([train_set, dev_set, test_set], ['train', 'dev',
         f.write(result)
 
 # Output the labels
-with open(os.path.join(output_dir, f'labels.txt'), 'w') as f:
-    f.write('\n'.join(sorted(list(set([label.replace(
-        ' ', '') for label in label_set])), key=lambda x: x.split('-')[1] if x != 'O' else x)))
+with open(os.path.join(output_dir, 'labels.txt'), 'w') as f:
+    f.write(
+        '\n'.join(
+            sorted(
+                list({label.replace(' ', '') for label in label_set}),
+                key=lambda x: x.split('-')[1] if x != 'O' else x,
+            )
+        )
+    )
